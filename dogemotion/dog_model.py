@@ -10,12 +10,21 @@ import pandas as pd
 class DogModel:
     def __init__(self, image_path, landmark_detector_path, dog_head_detector_path, model_path):
         self.image_path = image_path
-        self.landmark_detector_path = landmark_detector_path
-        self.dog_head_detector_path = dog_head_detector_path
-        self.model_path = model_path
+        # ---------------------------------------------------------
+        # landmarks detector
+        pathPred = landmark_detector_path
+        self.predictor = dlib.shape_predictor(pathPred)
+
+        # face detector
+        pathDet = dog_head_detector_path
+        self.detector = dlib.cnn_face_detection_model_v1(pathDet)
+
+        # load model
+        pathModel = model_path
+        self.model = load_model(pathModel)
+        # ---------------------------------------------------------
 
     def predict(self):
-        # ---------------------------------------------------------
         # image size for prediction
         img_width = 100
         img_height = 100
@@ -23,19 +32,6 @@ class DogModel:
         # scale factor for preprocessing
         picSize = 200
         rotation = True
-
-        # landmarks detector
-        pathPred = self.landmark_detector_path
-        predictor = dlib.shape_predictor(pathPred)
-
-        # face detector
-        pathDet = self.dog_head_detector_path
-        detector = dlib.cnn_face_detection_model_v1(pathDet)
-
-        # load model
-        pathModel = self.model_path
-        model = load_model(pathModel)
-        # ---------------------------------------------------------
         def predict_emotion(model, img):
             """
             Use a trained model to predict emotional state
@@ -77,7 +73,7 @@ class DogModel:
                 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
                 # detect face(s)
-                dets = detector(gray, upsample_num_times=1)
+                dets = self.detector(gray, upsample_num_times=1)
 
                 imageList = []  # for return
                 for i, d in enumerate(dets):
@@ -88,7 +84,7 @@ class DogModel:
                     y2 = min(int(d.rect.bottom() / ratio), height - 1)
 
                     # detect landmarks
-                    shape = face_utils.shape_to_np(predictor(gray, d.rect))
+                    shape = face_utils.shape_to_np(self.predictor(gray, d.rect))
                     points = []
                     index = 0
                     for (x, y) in shape:
@@ -132,7 +128,7 @@ class DogModel:
         if images != None:  # found face on image
             x = images[1]
 
-            df = predict_emotion(model, x)
+            df = predict_emotion(self.model, x)
 
             # sort and extract most probable emotion
             df = df.sort_values(by='prob', ascending=False)
