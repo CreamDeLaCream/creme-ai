@@ -1,0 +1,23 @@
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+
+name: Github To Gitlab Sync
+
+# 트리거
+on:
+  - push
+  - delete
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    name: Git Repo Sync
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    # https://github.com/wangchucheng/git-repo-sync.git
+    - uses: wangchucheng/git-repo-sync@v0.1.0
+      with: 
+        target-url: ${{ secrets.TARGET_URL }} 
+        target-username: ${{ secrets.GITLAB_USERNAME }}
+        target-token: ${{ secrets.ACCESS_TOKEN }}
