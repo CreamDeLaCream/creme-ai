@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dogemotion import views
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dogemotion/', views.index),
+    path('dog/', views.index),
 ]

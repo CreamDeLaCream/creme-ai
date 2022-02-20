@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class DogemotionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'dogemotion'
+    name = 'dog'
