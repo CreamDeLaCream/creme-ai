@@ -7,9 +7,8 @@ import math
 import numpy as np
 import pandas as pd
 
-class DogModel:
-    def __init__(self, image_path, landmark_detector_path, dog_head_detector_path, model_path):
-        self.image_path = image_path
+class DogModel: 
+    def __init__(self, landmark_detector_path, dog_head_detector_path, model_path):
         # ---------------------------------------------------------
         # landmarks detector
         pathPred = landmark_detector_path
@@ -24,7 +23,9 @@ class DogModel:
         self.model = load_model(pathModel)
         # ---------------------------------------------------------
 
-    def predict(self):
+    
+    def predict(self, image_path):
+        
         # image size for prediction
         img_width = 100
         img_height = 100
@@ -36,19 +37,22 @@ class DogModel:
             """
             Use a trained model to predict emotional state
             """
-            emotion = 'None'
 
             prediction = model.predict(img)
-            prediction_ = np.argmax(prediction)
+            
+            # 사용되지 않는 코드 주석 처리 했습니다!
+            
+            # prediction_ = np.argmax(prediction)
 
-            if prediction_ == 0:
-                emotion = 'Angry'
-            elif prediction_ == 1:
-                emotion = 'Scared'
-            elif prediction_ == 2:
-                emotion = 'Happy'
-            elif prediction_ == 3:
-                emotion = 'Sad'
+            # emotion = 'None'
+            # if prediction_ == 0:
+            #     emotion = 'Angry'
+            # elif prediction_ == 1:
+            #     emotion = 'Scared'
+            # elif prediction_ == 2:
+            #     emotion = 'Happy'
+            # elif prediction_ == 3:
+            #     emotion = 'Sad'
 
             d = {'emotion': ['Angry', 'Scared', 'Happy', 'Sad'],
                 'prob': prediction[0]}
@@ -124,7 +128,7 @@ class DogModel:
             return None
 
         # read and preprocess image
-        images = preprocess(self.image_path)
+        images = preprocess(image_path)
         if images != None:  # found face on image
             x = images[1]
 
@@ -135,3 +139,4 @@ class DogModel:
             js = df.to_json(orient = 'records')
             return js
         return None
+
