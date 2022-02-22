@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from dogemotion import dog_model
 from humanemotion import human_model
+import cv2
 
 
 def index(request):
@@ -11,11 +12,12 @@ def index(request):
     landmark_detector_path = "landmark detector path"
     dog_head_detector_path = "dog head detector path"
     model_path = "model path"
-    human_image_path = "sample human image path"
+    human_image_path = "humanemotion/image.png"
 
     result = dog_model.DogModel(
         image_path, landmark_detector_path, dog_head_detector_path, model_path).predict()
-
-    human_result = human_model.RMN.detect_emotion_for_single_frame(
-        './image.png')
-    return HttpResponse(human_result)
+    m = human_model.RMN()
+    img = cv2.imread(human_image_path)
+    human_result = m.detect_emotion_for_single_frame(
+        img)
+    return HttpResponse(result, human_result)
