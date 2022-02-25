@@ -22,7 +22,6 @@ class DogModel:
         pathModel = model_path
         self.model = load_model(pathModel)
         # ---------------------------------------------------------
-
     
     def predict(self, image_path):
         
@@ -40,20 +39,6 @@ class DogModel:
 
             prediction = model.predict(img)
             
-            # 사용되지 않는 코드 주석 처리 했습니다!
-            
-            # prediction_ = np.argmax(prediction)
-
-            # emotion = 'None'
-            # if prediction_ == 0:
-            #     emotion = 'Angry'
-            # elif prediction_ == 1:
-            #     emotion = 'Scared'
-            # elif prediction_ == 2:
-            #     emotion = 'Happy'
-            # elif prediction_ == 3:
-            #     emotion = 'Sad'
-
             d = {'emotion': ['Angry', 'Scared', 'Happy', 'Sad'],
                 'prob': prediction[0]}
             df = pd.DataFrame(d, columns=['emotion', 'prob'])
@@ -124,11 +109,11 @@ class DogModel:
                     x = np.expand_dims(pixel, axis=0)
                     x = x.reshape((-1, 100, 100, 1))
                     imageList.append(x)
-                    return imageList  # order: marked picture, input for classifier
+                    return (imageList, ((x1, y1), (x2, y2))) # order: marked picture, input for classifier
             return None
 
         # read and preprocess image
-        images = preprocess(image_path)
+        images, coordinate = preprocess(image_path)
         if images != None:  # found face on image
             x = images[1]
 
@@ -136,7 +121,17 @@ class DogModel:
 
             # sort and extract most probable emotion
             df = df.sort_values(by='prob', ascending=False)
+            # Take a dictionary as input to your DataFrame 
+            coordinate_dict = {"emotion": ['Coordinate'], "prob": [coordinate]}
+            df = df.append(pd.DataFrame(coordinate_dict))
             js = df.to_json(orient = 'records')
             return js
         return None
 
+# image_path = "/home/team14/creme-ai/dogemotion/dog.jpg"
+# landmark_detector_path = "/home/team14/creme-ai/dogemotion/landmarkDetector.dat"
+# dog_head_detector_path = "/home/team14/creme-ai/dogemotion/dogHeadDetector.dat"
+# model_path = "/home/team14/creme-ai/dogemotion/classifierRotatedOn100Ratio90Epochs100.h5"
+
+# test = DogModel(landmark_detector_path, dog_head_detector_path, model_path)
+# print(test.predict(image_path))
