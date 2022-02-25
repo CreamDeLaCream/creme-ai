@@ -13,6 +13,5 @@ setup(
     install_requires=[
         'keras==2.8.0',
         'tensorflow==2.8.0',
-        'dlib',
     ]
 ) 
