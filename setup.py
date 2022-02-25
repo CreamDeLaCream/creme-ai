@@ -10,8 +10,4 @@ setup(
     license='MIT',
     packages=['dogeemotion','humanemotion'],
     zip_safe=False,
-    install_requires=[
-        'keras==2.8.0',
-        'tensorflow==2.8.0',
-    ]
 ) 
