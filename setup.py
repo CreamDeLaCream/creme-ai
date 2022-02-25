@@ -8,6 +8,6 @@ setup(
     author='cream',
     author_email='immutable000@gmail.com',
     license='MIT',
-    packages=['dogeemotion','humanemotion'],
+    packages=['dogemotion','humanemotion'],
     zip_safe=False,
 ) 
