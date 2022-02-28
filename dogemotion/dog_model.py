@@ -7,8 +7,7 @@ import math
 import numpy as np
 import pandas as pd
 
-
-class DogModel:
+class DogModel: 
     def __init__(self, landmark_detector_path, dog_head_detector_path, model_path):
         # ---------------------------------------------------------
         # landmarks detector
@@ -23,9 +22,9 @@ class DogModel:
         pathModel = model_path
         self.model = load_model(pathModel)
         # ---------------------------------------------------------
-
+    
     def predict(self, image_path):
-
+        
         # image size for prediction
         img_width = 100
         img_height = 100
@@ -33,16 +32,15 @@ class DogModel:
         # scale factor for preprocessing
         picSize = 200
         rotation = True
-
         def predict_emotion(model, img):
             """
             Use a trained model to predict emotional state
             """
 
             prediction = model.predict(img)
-
+            
             d = {'emotion': ['Angry', 'Scared', 'Happy', 'Sad'],
-                 'prob': prediction[0]}
+                'prob': prediction[0]}
             df = pd.DataFrame(d, columns=['emotion', 'prob'])
 
             return df
@@ -75,8 +73,7 @@ class DogModel:
                     y2 = min(int(d.rect.bottom() / ratio), height - 1)
 
                     # detect landmarks
-                    shape = face_utils.shape_to_np(
-                        self.predictor(gray, d.rect))
+                    shape = face_utils.shape_to_np(self.predictor(gray, d.rect))
                     points = []
                     index = 0
                     for (x, y) in shape:
@@ -95,8 +92,7 @@ class DogModel:
                             angle = math.degrees(math.atan(yLine / xLine))
                         else:
                             yLine = points[2][1] - points[0][1]
-                            angle = 360 - \
-                                math.degrees(math.atan(yLine / xLine))
+                            angle = 360 - math.degrees(math.atan(yLine / xLine))
                         rotated = imutils.rotate(orig, angle)
                         # detectFace(rotated, picSize)
 
@@ -113,11 +109,11 @@ class DogModel:
                     x = np.expand_dims(pixel, axis=0)
                     x = x.reshape((-1, 100, 100, 1))
                     imageList.append(x)
-                    return imageList  # order: marked picture, input for classifier
+                    return (imageList, ((x1, y1), (x2, y2))) # order: marked picture, input for classifier
             return None
 
         # read and preprocess image
-        images = preprocess(image_path)
+        images, coordinate = preprocess(image_path)
         if images != None:  # found face on image
             x = images[1]
 
@@ -125,6 +121,17 @@ class DogModel:
 
             # sort and extract most probable emotion
             df = df.sort_values(by='prob', ascending=False)
-            js = df.to_json(orient='records')
+            # Take a dictionary as input to your DataFrame 
+            coordinate_dict = {"emotion": ['Coordinate'], "prob": [coordinate]}
+            df = df.append(pd.DataFrame(coordinate_dict))
+            js = df.to_json(orient = 'records')
             return js
         return None
+
+# image_path = "/home/team14/creme-ai/dogemotion/dog.jpg"
+# landmark_detector_path = "/home/team14/creme-ai/dogemotion/landmarkDetector.dat"
+# dog_head_detector_path = "/home/team14/creme-ai/dogemotion/dogHeadDetector.dat"
+# model_path = "/home/team14/creme-ai/dogemotion/classifierRotatedOn100Ratio90Epochs100.h5"
+
+# test = DogModel(landmark_detector_path, dog_head_detector_path, model_path)
+# print(test.predict(image_path))
