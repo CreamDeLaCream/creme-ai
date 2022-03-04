@@ -40,6 +40,7 @@ class DogModel:
             """
 
             prediction = model.predict(img)
+
             d = {'emotion': ['Angry', 'Scared', 'Happy', 'Sad'],
                  'prob': prediction[0]}
             df = pd.DataFrame(d, columns=['emotion', 'prob'])
@@ -125,6 +126,17 @@ class DogModel:
 
             # sort and extract most probable emotion
             df = df.sort_values(by='prob', ascending=False)
+            # Take a dictionary as input to your DataFrame
+            coordinate_dict = {"emotion": ['Coordinate'], "prob": [coordinate]}
+            df = df.append(pd.DataFrame(coordinate_dict))
             js = df.to_json(orient='records')
             return js
         return None
+
+# image_path = "/home/team14/creme-ai/dogemotion/dog.jpg"
+# landmark_detector_path = "/home/team14/creme-ai/dogemotion/landmarkDetector.dat"
+# dog_head_detector_path = "/home/team14/creme-ai/dogemotion/dogHeadDetector.dat"
+# model_path = "/home/team14/creme-ai/dogemotion/classifierRotatedOn100Ratio90Epochs100.h5"
+
+# test = DogModel(landmark_detector_path, dog_head_detector_path, model_path)
+# print(test.predict(image_path))
