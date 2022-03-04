@@ -96,12 +96,9 @@ transform = transforms.Compose(
 
 FER_2013_EMO_DICT = {
     0: "angry",
-    1: "disgust",
-    2: "fear",
-    3: "happy",
-    4: "sad",
-    5: "surprise",
-    6: "neutral",
+    1: "fear",
+    2: "happy",
+    3: "sad",
 }
 
 is_cuda = torch.cuda.is_available()
